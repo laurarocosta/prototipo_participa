@@ -53,7 +53,7 @@
       ['Jacintinho', 'Feitosa', 'Barro Duro', 'Serraria', 'São Jorge'],
       ['Benedito Bentes', 'Antares'],
       ['Santos Dumont', 'Clima Bom', 'Cidade Universitária', 'Santa Lúcia', 'Tabuleiro do Martins'],
-      ['Jacarecica', 'Garça Torta', 'Cruz das Almas', 'Riacho Doce', 'Pescaria', 'Ipioca']
+      ['Jacarecica', 'Guaxuma', 'Garça Torta', 'Cruz das Almas', 'Riacho Doce', 'Pescaria', 'Ipioca']
     ]
   };
 
@@ -138,17 +138,61 @@
     cartoes.forEach(function (c, k) { c.setAttribute('aria-expanded', k === i ? 'true' : 'false'); c.classList.toggle('regiao--ativa', k === i); });
     aberta = i;
     if (i < 0) { painelRA.hidden = true; return; }
-    var bairros = CICLO.regioes[i];
-    painelRA.innerHTML = '<div class="regiao-painel__topo"><span class="regiao-painel__ra">RA ' + (i + 1) + '</span>' +
-      '<h3>Região Administrativa ' + (i + 1) + '</h3><span class="regiao-painel__qtd">' + bairros.length + (bairros.length === 1 ? ' bairro' : ' bairros') + '</span>' +
+    var bairros = CICLO.regioes[i], n = i + 1;
+    painelRA.innerHTML = '<div class="regiao-painel__grade"><div class="regiao-painel__info">' +
+      '<div class="regiao-painel__topo"><span class="regiao-painel__ra">RA ' + n + '</span>' +
+      '<h3>Região Administrativa ' + n + '</h3><span class="regiao-painel__qtd">' + qtd(bairros) + '</span>' +
       '<button type="button" class="regiao-painel__fechar" aria-label="Fechar">×</button></div>' +
       '<ul class="bairros">' + bairros.map(function (b) {
-        return '<li class="bairro' + (destaque && semAcento(b).indexOf(destaque) > -1 ? ' bairro--achou' : '') + '">' + b + '</li>'; }).join('') + '</ul>';
+        return '<li class="bairro' + (destaque && semAcento(b).indexOf(destaque) > -1 ? ' bairro--achou' : '') + '">' + b + '</li>'; }).join('') + '</ul></div>' +
+      '<button type="button" class="regiao-mapa" aria-label="Ampliar o mapa da RA ' + n + '">' +
+        '<img src="mapas/ra-' + n + '.jpg" alt="' + altMapa(i) + '">' +
+        '<span class="regiao-mapa__zoom" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6M10.5 7.5v6M7.5 10.5h6"/></svg>Ampliar mapa</span>' +
+      '</button></div>';
     painelRA.hidden = false;
     painelRA.querySelector('.regiao-painel__fechar').addEventListener('click', function () { abrirRA(-1); cartoes[i].focus(); });
+    painelRA.querySelector('.regiao-mapa').addEventListener('click', function () { abrirMapa(i, this); });
     var r = painelRA.getBoundingClientRect();
     if (r.bottom > innerHeight || r.top < 80) painelRA.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+  function qtd(b) { return b.length + (b.length === 1 ? ' bairro' : ' bairros'); }
+  function altMapa(i) { return 'Mapa da Região Administrativa ' + (i + 1) + ', com os bairros ' + CICLO.regioes[i].join(', ') + '.'; }
+
+  /* Mapa ampliado (janela sobre a página). Fecha no ×, no Esc ou tocando fora. */
+  var modal = $('mapa-modal'), modalAtual = 0, origem = null;
+  function mostrarMapa(i) {
+    modalAtual = (i + CICLO.regioes.length) % CICLO.regioes.length;
+    var n = modalAtual + 1, bs = CICLO.regioes[modalAtual], total = CICLO.regioes.length;
+    $('mapa-modal-ra').textContent = 'RA ' + n;
+    $('mapa-modal-titulo').textContent = 'Região Administrativa ' + n;
+    $('mapa-modal-qtd').textContent = qtd(bs);
+    var img = $('mapa-modal-img'); img.src = 'mapas/ra-' + n + '.jpg'; img.alt = altMapa(modalAtual);
+    $('mapa-modal-bairros').innerHTML = bs.map(function (b) { return '<li class="bairro">' + b + '</li>'; }).join('');
+    $('mapa-anterior').textContent = '← RA ' + ((modalAtual - 1 + total) % total + 1);
+    $('mapa-proxima').textContent = 'RA ' + ((modalAtual + 1) % total + 1) + ' →';
+  }
+  function abrirMapa(i, botao) {
+    origem = botao; mostrarMapa(i);
+    if (modal.showModal) modal.showModal(); else modal.setAttribute('open', '');
+    document.documentElement.classList.add('sem-rolagem');
+  }
+  function fecharMapa() { if (modal.open) modal.close(); }
+  modal.addEventListener('close', function () {
+    document.documentElement.classList.remove('sem-rolagem');
+    if (modalAtual !== aberta) abrirRA(modalAtual);   // o painel acompanha a RA vista por último
+    var alvo = painelRA.querySelector('.regiao-mapa') || origem; if (alvo) alvo.focus();
+  });
+  $('mapa-modal-fechar').addEventListener('click', fecharMapa);
+  modal.addEventListener('click', function (e) { if (e.target === modal) fecharMapa(); });
+  $('mapa-anterior').addEventListener('click', function () { mostrarMapa(modalAtual - 1); });
+  $('mapa-proxima').addEventListener('click', function () { mostrarMapa(modalAtual + 1); });
+  modal.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') mostrarMapa(modalAtual - 1);
+    if (e.key === 'ArrowRight') mostrarMapa(modalAtual + 1);
+  });
+  /* pré-carrega os mapas depois que a página abre, para a troca ser instantânea */
+  window.addEventListener('load', function () { setTimeout(function () { CICLO.regioes.forEach(function (_, i) { new Image().src = 'mapas/ra-' + (i + 1) + '.jpg'; }); }, 2500); });
+
   CICLO.regioes.forEach(function (bairros, i) {
     var b = el('button', 'regiao', '<span class="regiao__sigla">RA</span><strong>' + (i + 1) + '</strong><span class="regiao__txt">' + bairros.length + (bairros.length === 1 ? ' bairro' : ' bairros') + '</span>');
     b.type = 'button'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'regiao-painel');
