@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#143A6E">
+  <meta name="description" content="Participa Maceió: a plataforma da Prefeitura para você conhecer o orçamento, indicar prioridades e acompanhar o planejamento da cidade.">
+  <title>Participa Maceió · A Maceió que queremos começa com a sua participação</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="logo-participa.svg" as="image">
+  <link rel="preload" as="image" href="fotos/capa-participacao.jpg" imagesrcset="fotos/capa-participacao-900.jpg 900w, fotos/capa-participacao.jpg 1800w" imagesizes="100vw">
+  <link rel="preload" href="montserrat.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=12">
+</head>
+<body>
+  <!--
+    PARTICIPA MACEIÓ · PROTÓTIPO DA PÁGINA INICIAL (versão 2)
+    Cores da bandeira e do brasão de Maceió: verde, branco e azul, com a onda vermelha.
+    Tudo o que muda a cada ciclo (anos, prazos, botões abertos) fica em script.js, no bloco CICLO.
+  -->
+  <a class="pular" href="#conteudo">Ir para o conteúdo</a>
+
+  <div class="barra-topo">
+    <div class="container barra-topo__inner">
+      <span><strong>PREFEITURA DE MACEIÓ</strong><span class="so-largo"> · SECRETARIA MUNICIPAL DE FAZENDA</span></span>
+      <div class="barra-topo__links">
+        <a href="#" class="so-largo">Acesso à informação</a>
+        <a href="#" class="so-largo">Ouvidoria</a>
+        <button type="button" class="contraste" id="contraste" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+          Contraste
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__inner">
+      <a href="#inicio" class="marca" aria-label="Participa Maceió, página inicial">
+        <img class="marca__logo" src="logo-participa.svg" alt="Participa+ Maceió" width="311" height="100">
+      </a>
+      <nav class="menu" aria-label="Navegação principal">
+        <a href="#inicio">Início</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#regioes">Regiões</a>
+        <a href="#perguntas">Dúvidas</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <a href="#" class="btn btn--contorno btn--pequeno cabecalho__admin">Acesso administrativo</a>
+      <button type="button" class="menu-botao" id="menu-botao" aria-expanded="false" aria-controls="menu-celular" aria-label="Abrir o menu">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+    <nav class="menu-celular" id="menu-celular" aria-label="Menu" hidden>
+      <a href="#inicio">Início</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#regioes">Regiões administrativas</a>
+      <a href="#perguntas">Dúvidas frequentes</a>
+      <a href="#contato">Contato</a>
+      <a href="#" class="menu-celular__admin">Acesso administrativo</a>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    <!-- 1. Painel principal: todos os acessos em um só lugar -->
+    <section class="painel" id="inicio">
+      <div class="capa">
+        <img class="capa__foto" src="fotos/capa-participacao.jpg" srcset="fotos/capa-participacao-900.jpg 900w, fotos/capa-participacao.jpg 1800w" sizes="100vw" alt="Moradores de diferentes idades, sentados em volta de mesas, preenchem formulários e conversam durante uma audiência pública do Participa Maceió." fetchpriority="high">
+        <div class="container capa__inner">
+          <span class="sobretitulo sobretitulo--claro">PARTICIPE E ACOMPANHE</span>
+          <h1 class="painel__titulo">A Maceió que queremos <span>começa com a sua participação.</span></h1>
+          <p class="painel__lead">Conheça as ações, indique o que é prioridade no seu bairro e acompanhe o orçamento da cidade. Tudo em um só lugar.</p>
+        </div>
+      </div>
+      <div class="container painel__inner">
+        <nav class="acessos" id="acessos" aria-label="Acessos do Participa Maceió"></nav>
+
+        <aside class="ciclo" id="ciclo" aria-labelledby="ciclo-titulo">
+          <div class="ciclo__info">
+            <div class="ciclo__topo"><span class="ciclo__status" id="ciclo-status">Carregando…</span><span class="ciclo__ano" id="ciclo-ano"></span></div>
+            <h2 class="ciclo__titulo" id="ciclo-titulo">Consulta pública</h2>
+            <p class="ciclo__texto" id="ciclo-texto"></p>
+            <div class="ciclo__prazo" id="ciclo-prazo"></div>
+          </div>
+          <a href="#" class="btn btn--verde ciclo__botao" id="ciclo-botao">Participar</a>
+        </aside>
+      </div>
+      <div class="faixa-bandeira" aria-hidden="true"><svg viewBox="0 0 1440 40" preserveAspectRatio="none"><path d="M0 20 C180 4 360 36 540 20 C720 4 900 36 1080 20 C1260 4 1350 30 1440 20" fill="none" stroke="#C8102E" stroke-width="6"/></svg></div>
+    </section>
+
+    <!-- 2. Como funciona: o caminho completo, da inscrição ao acompanhamento -->
+    <section class="faixa faixa--azul" id="como-funciona">
+      <div class="container secao">
+        <span class="sobretitulo sobretitulo--claro">COMO FUNCIONA</span>
+        <h2>Da sua opinião ao orçamento da cidade</h2>
+        <p class="intro">Você não precisa entender de orçamento. O Participa mostra as ações, você escolhe e depois acompanha o que foi feito com a sua indicação.</p>
+        <ol class="fluxo">
+          <li><span class="fluxo__num">1</span><span class="fluxo__quem">Você</span><h3>Faça sua inscrição</h3><p>Cadastro gratuito, em que você informa a sua região (RA).</p></li>
+          <li><span class="fluxo__num">2</span><span class="fluxo__quem">Você</span><h3>Conheça e priorize</h3><p>Veja as ações de cada área e região e escolha as mais importantes. Se quiser, explique o porquê ou envie uma ideia.</p></li>
+          <li><span class="fluxo__num">3</span><span class="fluxo__quem fluxo__quem--pref">Prefeitura</span><h3>Consolidação</h3><p>A Prefeitura reúne tudo o que foi indicado e publica a ata da consulta.</p></li>
+          <li><span class="fluxo__num">4</span><span class="fluxo__quem fluxo__quem--pref">Prefeitura</span><h3>Proposta de orçamento</h3><p>As prioridades ajudam a montar a proposta de orçamento (PLOA), enviada à Câmara Municipal.</p></li>
+          <li><span class="fluxo__num">5</span><span class="fluxo__quem">Você</span><h3>Acompanhe</h3><p>Aprovado o orçamento, você acompanha a execução no Portal da Transparência.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 3. Participação de todos (inclusão) -->
+    <section class="inclusao" id="inclusao">
+      <div class="container secao inclusao__inner">
+        <figure class="inclusao__figura">
+          <span class="inclusao__anel" aria-hidden="true"></span>
+          <div class="inclusao__foto">
+            <!-- FOTOS: para trocar, substitua os arquivos da pasta fotos/ (formato 4:3, até 1200 px de largura) e ajuste o texto alternativo (alt). -->
+            <div class="carrossel" id="carrossel" role="region" aria-roledescription="carrossel" aria-label="Fotos de pessoas de Maceió">
+              <figure class="carrossel__item ativo" aria-roledescription="foto" aria-label="1 de 12">
+                <img src="fotos/participa-00.jpg" alt="Morador com a camiseta “Planejar com o povo é…” conversa com outros participantes numa audiência pública do Participa Maceió." loading="eager" fetchpriority="high">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="2 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-p1.jpg" alt="Mulheres sentadas em carteiras escolares preenchem as fichas de participação numa audiência pública." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="3 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-01.jpg" alt="Família em frente à casa nova, no Benedito Bentes: pai, mãe grávida e duas meninas sorrindo." decoding="async"><figcaption>Foto: Gabriel Moreira</figcaption>
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="4 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-p2.jpg" alt="Homem de cabelos brancos, com a camiseta do Participa Maceió, escreve propostas num quadro durante a audiência." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="5 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-02.jpg" alt="Duas mulheres sorrindo lado a lado; uma delas usa cadeira de rodas." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="6 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-p3.jpg" alt="Senhora idosa recebe ajuda de uma atendente para preencher sua ficha na audiência pública." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="7 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-03.jpg" alt="Duas meninas de uniforme escolar da rede municipal, sorrindo no parquinho." decoding="async"><figcaption>Foto: Mariel Matias</figcaption>
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="8 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-04.jpg" alt="Artesã trabalhando em seu quiosque, cercada de peças coloridas." decoding="async"><figcaption>Foto: Tatiane</figcaption>
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="9 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-p4.jpg" alt="Participante escreve o nome no crachá colorido da Audiência Pública, apoiado na ficha de participação." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="10 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-05.jpg" alt="Menino com protetor auricular e cordão de girassol, fazendo sinal de positivo." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="11 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-06.jpg" alt="Homem em cadeira de rodas e uma mulher sorrindo na orla de Maceió." decoding="async">
+              </figure>
+              <figure class="carrossel__item" aria-roledescription="foto" aria-label="12 de 12" aria-hidden="true">
+                <img data-src="fotos/participa-07.jpg" alt="Duas mulheres sorrindo em frente a um conjunto residencial." decoding="async"><figcaption>Foto: Gabriel Moreira</figcaption>
+              </figure>
+              <div class="carrossel__controles">
+                <div class="carrossel__pontos" id="carrossel-pontos"></div>
+                <button type="button" class="carrossel__pausa" id="carrossel-pausa" aria-label="Pausar as fotos"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="i-pausa" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/><path class="i-play" d="M8 5l11 7-11 7z" fill="currentColor"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <img class="inclusao__mais" src="mais-pincel.svg" alt="" width="120" height="120" loading="lazy">
+        </figure>
+        <div class="inclusao__texto">
+          <span class="sobretitulo">PARA TODA MACEIÓ</span>
+          <h2>Mais vozes. <span>Mais Maceió.</span></h2>
+          <p class="intro">Do Benedito Bentes à Ponta Verde, do Jacintinho a Ipioca, cada bairro tem as suas prioridades. A Prefeitura quer ouvir jovens e pessoas idosas, pessoas com deficiência, mães, trabalhadores e todo mundo que faz a cidade acontecer. Quanto mais gente participa, mais o orçamento se parece com Maceió.</p>
+          <h3 class="inclusao__subtitulo">Participar ficou mais fácil</h3>
+          <ul class="jeitos">
+            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></span><span><strong>Alto contraste</strong>Toque em “Contraste”, no topo da página, para ler com mais conforto.</span></li>
+            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 8.5 6 13 18M5.6 14h5.8"/><path d="M15.5 11.5a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6zM18.3 11v7"/></svg></span><span><strong>Linguagem simples</strong>Tudo explicado sem termos técnicos. Ficou com dúvida? O OP MCZ explica.</span></li>
+            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span><span><strong>Pelo celular</strong>Funciona em qualquer celular, sem precisar baixar aplicativo.</span></li>
+            <!-- Confirmar com a SEMFAZ: existe ponto de apoio presencial? Se não, troque ou tire este item. -->
+            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span><strong>Ajuda presencial</strong>Sem internet em casa? Procure o ponto de apoio mais perto de você.</span></li>
+          </ul>
+          <p class="inclusao__nota">O orçamento de Maceió também tem um olhar especial para quem mais precisa, com demonstrativos próprios para <strong>crianças e adolescentes</strong>, <strong>pessoas idosas</strong> e <strong>população em situação de rua</strong>. <a href="#" class="link-op">Veja no OP MCZ</a>.</p>
+          <a href="#acessos" class="btn btn--verde">Quero dar minha opinião</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. O que a cidade pediu (dados em script.js, CICLO.resultado) -->
+    <section class="faixa faixa--verde" id="resultado">
+      <div class="container secao">
+        <span class="sobretitulo sobretitulo--verde">RESULTADO DA ÚLTIMA CONSULTA</span>
+        <h2>O que a cidade pediu</h2>
+        <p class="intro" id="resultado-intro"></p>
+        <ol class="pedidos" id="pedidos"></ol>
+        <p class="pedidos__nota" id="resultado-nota"></p>
+      </div>
+    </section>
+
+    <!-- 4. Regiões -->
+    <section class="container secao" id="regioes">
+      <span class="sobretitulo">REGIÕES ADMINISTRATIVAS</span>
+      <h2>Qual é a sua região?</h2>
+      <p class="intro">Maceió é dividida em 8 regiões administrativas (RA). Você escolhe a sua na inscrição. Na dúvida, toque numa RA para ver os bairros dela ou procure pelo nome do seu bairro.</p>
+      <div class="busca-bairro">
+        <label for="busca-bairro">Procure seu bairro</label>
+        <div class="busca-bairro__campo">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input type="search" id="busca-bairro" placeholder="Ex.: Jacintinho" autocomplete="off" aria-describedby="busca-resposta">
+        </div>
+        <p class="busca-bairro__resposta" id="busca-resposta" aria-live="polite"></p>
+      </div>
+      <div class="regioes" id="regioes-lista"></div>
+      <div class="regiao-painel" id="regiao-painel" aria-live="polite" hidden></div>
+    </section>
+
+    <!-- 6. Perguntas frequentes -->
+    <section class="container secao" id="perguntas">
+      <span class="sobretitulo">PERGUNTAS FREQUENTES</span>
+      <h2>Participe com informação</h2>
+      <div class="perguntas">
+        <details><summary>O que é o Participa Maceió?</summary><p>É a plataforma de participação social da Prefeitura de Maceió. Por ela, a população conhece as ações do Município, apresenta contribuições e indica as prioridades da sua comunidade para o orçamento.</p></details>
+        <details><summary>O que são PPA, LDO e PLOA?</summary><p>São as três leis do planejamento. O <strong>PPA</strong> é o plano de quatro anos. A <strong>LDO</strong> define as metas e as regras de cada ano. O <strong>PLOA</strong> é a proposta de orçamento do ano seguinte, enviada à Câmara Municipal.</p></details>
+        <details><summary>Como as prioridades indicadas são usadas?</summary><p>As indicações são reunidas e analisadas por critérios como o planejamento municipal, a competência do Município, o custo, a região e a capacidade de execução. O resultado ajuda a montar a proposta de orçamento.</p></details>
+        <details><summary>Quem pode participar?</summary><p>Qualquer pessoa, com um cadastro gratuito na plataforma durante a consulta pública.</p></details>
+        <details><summary>Onde acompanho como o dinheiro é gasto?</summary><p>No Portal da Transparência da Prefeitura, que mostra durante o ano quanto já foi empenhado, liquidado e pago.</p></details>
+      </div>
+    </section>
+
+    <!-- 7. Ponte com o OP MCZ -->
+    <section class="container secao secao--sem-topo">
+      <a class="ponte" href="#" id="link-op-mcz">
+        <span class="ponte__texto"><span class="ponte__titulo">Antes de opinar, entenda o orçamento</span><span>O OP MCZ explica, de forma simples, de onde vem e para onde vai o dinheiro de Maceió.</span></span>
+        <span class="ponte__seta" aria-hidden="true">→</span>
+      </a>
+    </section>
+
+    <!-- 8. Chamada final -->
+    <section class="chamada">
+      <div class="container chamada__inner">
+        <svg class="chamada__icone" viewBox="128 122 540 418" width="112" height="87" aria-hidden="true"><defs><mask id="mk" maskUnits="userSpaceOnUse" x="0" y="0" width="1700" height="700"><rect width="1700" height="700" fill="#fff"/><path d="M293 193H662V397H533V470L462 397H293Z" fill="#000"/></mask></defs><path mask="url(#mk)" d="M226 417A148 148 0 1 1 288 442L233 512Z" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-miterlimit="8"/><path d="M320 220H635V370H507V433L449 370H320Z" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-miterlimit="8"/></svg>
+        <div>
+          <h2>A Maceió que queremos começa com a sua participação.</h2>
+          <p>Cada indicação ajuda a definir onde o orçamento da cidade vai chegar.</p>
+        </div>
+        <a href="#inicio" class="btn btn--verde" id="chamada-botao">Quero fazer parte</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape" id="contato">
+    <div class="faixa-bandeira faixa-bandeira--rodape" aria-hidden="true"></div>
+    <div class="container rodape__inner">
+      <div>
+        <div class="rodape__marca"><img class="rodape__logo" src="logo-participa-negativo.svg" alt="Participa+ Maceió" width="311" height="100"></div>
+        <p>Prefeitura de Maceió · Secretaria Municipal de Fazenda</p>
+      </div>
+      <div><div class="rodape__rotulo">Endereço</div><p>Rua Pedro Monteiro, nº 47 · Centro<br>Maceió/AL · CEP 57020-380</p></div>
+      <div><div class="rodape__rotulo">Links</div><p><a href="#">Portal da Transparência</a><br><a href="#">Ouvidoria</a><br><a href="#">@participamaceio</a></p></div>
+    </div>
+  </footer>
+
+  <script src="script.js?v=9"></script>
+</body>
+</html>
