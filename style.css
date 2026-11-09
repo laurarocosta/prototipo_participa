@@ -335,22 +335,22 @@ html.alto-contraste .carrossel__pausa { background: #000; color: #FFE600; border
 
 /* Capa com foto da participação popular */
 .capa { position: relative; overflow: hidden; background: var(--azul-escuro); color: var(--branco); }
-.capa__foto { position: absolute; top: 0; right: 0; width: 62%; height: 100%; object-fit: cover; object-position: 60% 35%; }
-.capa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--azul-escuro) 0%, var(--azul-escuro) 38%, rgba(20,58,110,.55) 50%, rgba(20,58,110,.08) 66%, rgba(20,58,110,0) 100%); }
+.capa__foto { position: absolute; top: 0; right: 0; width: 66%; height: 100%; object-fit: cover; object-position: 26% 40%; }
+.capa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--azul-escuro) 0%, var(--azul-escuro) 34%, rgba(20,58,110,.88) 40%, rgba(20,58,110,.6) 48%, rgba(20,58,110,.28) 56%, rgba(20,58,110,.08) 65%, rgba(20,58,110,0) 74%); }
 .capa__inner { position: relative; z-index: 1; min-height: 420px; display: flex; flex-direction: column; justify-content: center; padding-top: 48px; padding-bottom: 48px; }
-.capa .painel__titulo { color: var(--branco); max-width: 640px; }
+.capa .painel__titulo { color: var(--branco); max-width: 600px; }
 .capa .painel__titulo span { color: #7FDCA6; }
-.capa .painel__lead { color: #DCE7F5; max-width: 520px; margin-bottom: 0; }
+.capa .painel__lead { color: #DCE7F5; max-width: 500px; margin-bottom: 0; }
 .painel__inner { padding-top: 26px; }
 @media (max-width: 720px) {
-  .capa__foto { width: 100%; object-position: 72% 30%; }
+  .capa__foto { width: 100%; object-position: 38% 20%; }
   .capa::after { background: linear-gradient(to top, rgba(20,58,110,.97) 0%, rgba(20,58,110,.9) 45%, rgba(20,58,110,.35) 78%, rgba(20,58,110,.1) 100%); }
-  .capa__inner { min-height: 360px; justify-content: flex-end; padding-top: 120px; padding-bottom: 24px; }
+  .capa__inner { min-height: 400px; justify-content: flex-end; padding-top: 150px; padding-bottom: 24px; }
   .painel__inner { padding-top: 18px; }
 }
 html.alto-contraste .capa::after { background: rgba(0,0,0,.86); }
 html.alto-contraste .capa { background: #000 !important; }
-@media (min-width: 721px) and (max-width: 1100px) { .capa__foto { width: 75%; } .capa::after { background: linear-gradient(90deg, var(--azul-escuro) 0%, var(--azul-escuro) 30%, rgba(20,58,110,.6) 50%, rgba(20,58,110,.15) 75%, rgba(20,58,110,0) 100%); } }
+@media (min-width: 721px) and (max-width: 1100px) { .capa__foto { width: 70%; object-position: 28% 35%; } .capa::after { background: linear-gradient(90deg, var(--azul-escuro) 0%, var(--azul-escuro) 30%, rgba(20,58,110,.6) 50%, rgba(20,58,110,.15) 75%, rgba(20,58,110,0) 100%); } }
 
 /* Aviso de protótipo (apagar junto com o bloco no index.html) */
 .aviso-prototipo { padding: 7px 16px; background: #FFF4CC; color: #5C4200; font-size: 13px; font-weight: 700; text-align: center; line-height: 1.35; }

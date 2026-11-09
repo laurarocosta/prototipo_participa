@@ -34,7 +34,7 @@
     // Resultado da consulta anterior (Mensagem do PLOA 2027)
     resultado: {
       ano: 2026,
-      intro: 'Na consulta de 2026, as ações mais indicadas pelos participantes foram:',
+      intro: 'Na consulta de 2026, para o orçamento de 2027, a sociedade priorizou:',
       pedidos: [
         'Implantação do BRT',
         'Modernização e expansão da iluminação pública',
