@@ -12,7 +12,7 @@
   <link rel="preload" href="logo-participa.svg" as="image">
   <link rel="preload" as="image" href="fotos/capa-participacao.jpg?v=3" imagesrcset="fotos/capa-participacao-900.jpg?v=3 900w, fotos/capa-participacao.jpg?v=3 1600w" imagesizes="100vw">
   <link rel="preload" href="montserrat.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=20">
   <script>try{var l=localStorage.getItem("participa-letra");if(l==="1"||l==="2")document.documentElement.classList.add("letra-"+l)}catch(e){}</script>
 </head>
 <body>
@@ -52,6 +52,7 @@
         <a href="#inicio">Início</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#regioes">Regiões</a>
+        <a href="#dicionario">Dicionário</a>
         <a href="#perguntas">Dúvidas</a>
         <a href="#contato">Contato</a>
       </nav>
@@ -64,6 +65,7 @@
       <a href="#inicio">Início</a>
       <a href="#como-funciona">Como funciona</a>
       <a href="#regioes">Regiões administrativas</a>
+      <a href="#dicionario">Dicionário</a>
       <a href="#perguntas">Dúvidas frequentes</a>
       <a href="#contato">Contato</a>
       <a href="#" class="menu-celular__admin">Acesso administrativo</a>
@@ -172,7 +174,7 @@
           <h3 class="inclusao__subtitulo">Participar ficou mais fácil</h3>
           <ul class="jeitos">
             <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></span><span><strong>Alto contraste</strong>Toque em “Contraste”, no topo da página, para ler com mais conforto.</span></li>
-            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 8.5 6 13 18M5.6 14h5.8"/><path d="M15.5 11.5a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6zM18.3 11v7"/></svg></span><span><strong>Linguagem simples</strong>Tudo explicado sem termos técnicos. Ficou com dúvida? O OP MCZ explica.</span></li>
+            <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 8.5 6 13 18M5.6 14h5.8"/><path d="M15.5 11.5a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6zM18.3 11v7"/></svg></span><span><strong>Palavras explicadas</strong>As palavras com sublinhado pontilhado têm explicação: é só tocar. Dá para ouvir também.</span></li>
             <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span><span><strong>Pelo celular</strong>Funciona em qualquer celular, sem precisar baixar aplicativo.</span></li>
             <!-- Confirmar com a SEMFAZ: existe ponto de apoio presencial? Se não, troque ou tire este item. -->
             <li><span class="jeitos__icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span><strong>Ajuda presencial</strong>Sem internet em casa? Procure o ponto de apoio mais perto de você.</span></li>
@@ -227,6 +229,26 @@
       </dialog>
     </section>
 
+    <!-- Dicionário (as palavras vêm de glossario.js) -->
+    <section class="container secao" id="dicionario">
+      <span class="sobretitulo">DICIONÁRIO</span>
+      <h2>Palavras difíceis, explicadas de um jeito simples</h2>
+      <p class="intro">Em todo o site, as palavras com <span class="exemplo-termo">sublinhado pontilhado</span> têm explicação: é só tocar nelas. Aqui estão todas juntas, e dá para ouvir cada uma.</p>
+      <div class="dic__ferramentas">
+        <label class="busca-bairro__campo dic__busca">
+          <span class="sr-only">Buscar uma palavra no dicionário</span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input type="search" id="busca-termo" placeholder="Buscar uma palavra. Ex.: PLOA" autocomplete="off" enterkeyhint="search">
+        </label>
+        <div class="dic__letras" id="dic-letras" role="group" aria-label="Filtrar por letra"></div>
+      </div>
+      <p class="dic__contagem" id="dic-contagem" aria-live="polite"></p>
+      <ul class="dic" id="dic-lista"></ul>
+      <p class="dic__vazio" id="dic-vazio" hidden>Nenhuma palavra encontrada. Tente outra.</p>
+      <button type="button" class="btn btn--contorno dic__ver-todas" id="dic-mais" hidden>Ver todas as palavras</button>
+      <p class="dic__op">Quer entender o orçamento a fundo? O <a href="https://laurarocosta.github.io/Orcamento-Popular-Maceio-2027/#dicionario">dicionário do OP MCZ</a> tem mais palavras.</p>
+    </section>
+
     <!-- 6. Perguntas frequentes -->
     <section class="container secao" id="perguntas">
       <span class="sobretitulo">PERGUNTAS FREQUENTES</span>
@@ -273,6 +295,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=12"></script>
+  <script src="glossario.js?v=2"></script>
+  <script src="script.js?v=15"></script>
 </body>
 </html>

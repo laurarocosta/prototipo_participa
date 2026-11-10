@@ -404,3 +404,94 @@ html.letra-2 body { zoom: 1.3; }
   .lupa__texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .barra-topo__inner { flex-wrap: wrap; row-gap: 0; }
 }
+
+/* ==========================================================
+   Palavras difíceis: sublinhado pontilhado + balão com explicação
+   ========================================================== */
+.termo-junto { white-space: nowrap; }
+.termo-tecnico { display: inline; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; line-height: inherit;
+  text-align: inherit; letter-spacing: inherit; text-transform: inherit; cursor: help; border-radius: 3px;
+  text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: currentColor;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.termo-tecnico:hover, .termo-tecnico[aria-expanded="true"] { text-decoration-style: solid; background: rgba(15, 122, 69, .14); }
+.termo-tecnico:focus-visible { outline: 3px solid var(--vermelho); outline-offset: 2px; }
+.faixa--azul .termo-tecnico:hover, .faixa--azul .termo-tecnico[aria-expanded="true"], .capa .termo-tecnico:hover, .capa .termo-tecnico[aria-expanded="true"],
+.chamada .termo-tecnico:hover { background: rgba(255, 255, 255, .2); }
+.glossario-pop { position: fixed; z-index: 70; width: min(340px, calc(100vw - 24px)); padding: 16px 18px 14px; border: 2px solid var(--azul); border-radius: 16px;
+  background: var(--branco); color: var(--texto); box-shadow: 0 14px 34px rgba(20, 58, 110, .25); font-size: 15px; line-height: 1.5; }
+.glossario-pop[hidden], .glossario-fundo[hidden] { display: none; }
+.glossario-pop::before { content: ""; position: absolute; top: -9px; left: calc(var(--seta-x, 50%) - 8px); width: 14px; height: 14px; background: var(--branco);
+  border-left: 2px solid var(--azul); border-top: 2px solid var(--azul); transform: rotate(45deg); }
+.glossario-pop--acima::before { top: auto; bottom: -9px; transform: rotate(225deg); }
+.glossario-pop__nome { padding-right: 30px; font-weight: 800; font-size: 16px; color: var(--azul-escuro); }
+.glossario-pop__def { margin-top: 6px; color: var(--texto-2); }
+.glossario-pop__fechar { position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--azul-escuro); font-size: 24px; line-height: 1; cursor: pointer; }
+.glossario-pop__fechar:hover { background: var(--azul-claro); }
+.glossario-pop__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; }
+.glossario-pop__link { padding: 6px 0; border: 0; background: none; font: inherit; color: var(--azul); font-weight: 800; font-size: 14px; text-decoration: underline; cursor: pointer; }
+.ouvir { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 2px solid var(--verde);
+  background: var(--branco); color: var(--verde-escuro); font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; }
+.ouvir svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ouvir svg path:first-child { fill: currentColor; }
+.ouvir[aria-pressed="true"] { background: var(--verde); color: var(--branco); }
+@media (max-width: 720px) {
+  .glossario-fundo { position: fixed; inset: 0; z-index: 69; background: rgba(10, 25, 50, .35); }
+  .glossario-pop.glossario-pop--folha { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: 100%; border-width: 0; border-radius: 22px 22px 0 0;
+    padding: 22px 20px calc(20px + env(safe-area-inset-bottom)); font-size: 17px; box-shadow: 0 -10px 40px rgba(10, 25, 50, .3); animation: folha-sobe .22s ease-out; }
+  .glossario-pop--folha::before { top: 8px; left: 50%; width: 44px; height: 5px; margin-left: -22px; border: 0; border-radius: 999px; background: var(--borda); transform: none; }
+  .glossario-pop--folha .glossario-pop__nome { font-size: 19px; padding-right: 44px; }
+  .glossario-pop--folha .glossario-pop__fechar { top: 12px; right: 12px; width: 44px; height: 44px; background: var(--azul-claro); }
+  .glossario-pop--folha .ouvir { min-height: 48px; padding: 8px 18px; font-size: 15px; }
+  .glossario-pop--folha .glossario-pop__link { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; }
+}
+/* no celular, área de toque maior sem mudar o visual */
+@media (pointer: coarse) { .termo-tecnico { padding: 10px 0; margin: -10px 0; } .termo-tecnico:hover { background: none; } }
+@keyframes folha-sobe { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .glossario-pop.glossario-pop--folha { animation: none; } }
+html.alto-contraste .glossario-pop { background: #000; color: #FFF; border-color: #FFE600; }
+html.alto-contraste .glossario-pop::before { background: #000; border-color: #FFE600; }
+html.alto-contraste .glossario-pop__nome, html.alto-contraste .glossario-pop__def { color: #FFF !important; }
+html.alto-contraste .ouvir { background: #000; color: #FFE600; border-color: #FFE600; }
+html.alto-contraste .termo-tecnico:hover, html.alto-contraste .termo-tecnico[aria-expanded="true"] { background: #FFE600; color: #000 !important; }
+
+/* ==========================================================
+   Dicionário
+   ========================================================== */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.exemplo-termo { text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.dic__ferramentas { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-bottom: 8px; }
+.dic__busca { flex: 1 1 320px; max-width: 460px; }
+.dic__busca input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--texto); padding: 12px 0; }
+.dic__letras { display: flex; flex-wrap: wrap; gap: 6px; }
+.dic__letra { min-width: 40px; height: 40px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--borda); background: var(--branco); color: var(--azul-escuro);
+  font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
+.dic__letra:hover { border-color: var(--azul); }
+.dic__letra[aria-pressed="true"] { background: var(--azul); border-color: var(--azul); color: var(--branco); }
+.dic__contagem { min-height: 22px; font-size: 14px; color: var(--texto-suave); margin: 4px 0 8px; }
+.dic__contagem:empty { min-height: 0; margin: 0 0 8px; }
+.dic { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.dic__item { background: var(--branco); border: 2px solid var(--borda); border-radius: 16px; overflow: hidden; transition: border-color .15s; }
+.dic__item:hover { border-color: #B8C8DA; }
+.dic__item--aberto { border-color: var(--azul); grid-column: 1 / -1; }
+.dic__termo { width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 12px; padding: 14px 16px; border: 0; background: none;
+  font: inherit; text-align: left; color: var(--azul-escuro); cursor: pointer; min-height: 60px; }
+.dic__nome { font-weight: 800; font-size: 17px; }
+.dic__extenso { grid-column: 1; grid-row: 2; font-size: 13.5px; color: var(--texto-suave); margin-top: 2px; }
+.dic__seta { grid-column: 2; grid-row: 1 / 3; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--azul-claro); font-size: 20px; line-height: 1; }
+.dic__item--aberto .dic__seta { background: var(--azul); color: var(--branco); }
+.dic__def { padding: 0 16px 16px; color: var(--texto-2); }
+.dic__def p { margin-bottom: 12px; max-width: 760px; font-size: 16.5px; }
+.dic__vazio { color: var(--texto-suave); margin-top: 8px; }
+.dic__ver-todas { width: 100%; max-width: 420px; margin-top: 12px; }
+.dic__ver-todas[hidden] { display: none; }
+.dic__op { margin-top: 18px; font-size: 15px; color: var(--texto-2); }
+@media (max-width: 720px) {
+  .dic { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .dic__letras { gap: 5px; }
+  .dic__letra { min-width: 44px; height: 44px; }
+  .dic__ver-todas { max-width: none; }
+}
+html.alto-contraste .dic__item, html.alto-contraste .dic__letra { background: #000 !important; color: #FFF !important; border-color: #FFF !important; }
+html.alto-contraste .dic__termo, html.alto-contraste .dic__def, html.alto-contraste .dic__extenso { color: #FFF !important; }
+html.alto-contraste .dic__letra[aria-pressed="true"] { background: #FFE600 !important; color: #000 !important; }

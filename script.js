@@ -282,4 +282,223 @@
     botao.setAttribute('aria-label', abrir ? 'Fechar o menu' : 'Abrir o menu');
   });
   menu.addEventListener('click', function (e) { if (e.target.closest('a')) { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); } });
+  /* ==========================================================
+     PALAVRAS DIFÍCEIS — balão com explicação e leitura em voz alta
+     Os termos vêm de glossario.js. O site sublinha a 1ª vez que cada um
+     aparece em cada seção. Toque (celular), mouse (computador) ou teclado abrem.
+     ========================================================== */
+  (function () {
+    var GLOSS = window.GLOSSARIO || []; if (!GLOSS.length) return;
+    var POR_ID = {}; GLOSS.forEach(function (t) { POR_ID[t.id] = t; });
+    function novo(tag, cls, txt, attrs) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; for (var k in (attrs || {})) e.setAttribute(k, attrs[k]); return e; }
+    function rotuloCurto(t) { return t.nome.split(' · ')[0]; }
+    function ehCelular() { return window.matchMedia('(max-width: 720px)').matches; }
+    function zoomBody() { return parseFloat(getComputedStyle(document.body).zoom) || 1; }   // a lupa usa zoom
+
+    /* ---------- Leitura em voz alta (voz do próprio aparelho) ---------- */
+    var VELOCIDADE_VOZ = 1.25;   // 1 = normal; aumente para ler mais rápido, diminua para ler mais devagar
+    var falaOk = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window, vozPt = null, falando = null;
+    function escolherVoz() {
+      var v = window.speechSynthesis.getVoices();
+      vozPt = v.filter(function (x) { return /^pt(-|_)BR/i.test(x.lang); })[0] || v.filter(function (x) { return /^pt/i.test(x.lang); })[0] || null;
+    }
+    if (falaOk) { escolherVoz(); window.speechSynthesis.addEventListener('voiceschanged', escolherVoz); }
+    function marcar(btn, sim) { if (!btn) return; btn.setAttribute('aria-pressed', sim ? 'true' : 'false'); btn.querySelector('.ouvir__txt').textContent = sim ? 'Parar' : 'Ouvir'; }
+    function pararFala() { if (!falaOk) return; window.speechSynthesis.cancel(); marcar(falando, false); falando = null; }
+    function falar(t, btn) {
+      if (falando === btn) { pararFala(); return; }
+      pararFala();
+      var u = new SpeechSynthesisUtterance((t.falar || t.nome) + '. ' + t.def);
+      u.lang = 'pt-BR'; if (vozPt) u.voice = vozPt; u.rate = VELOCIDADE_VOZ;
+      u.onend = u.onerror = function () { if (falando === btn) { marcar(btn, false); falando = null; } };
+      falando = btn; marcar(btn, true); window.speechSynthesis.speak(u);
+    }
+    var ICONE_SOM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+    function botaoOuvir(t) {
+      if (!falaOk) return null;
+      var b = novo('button', 'ouvir', null, { type: 'button', 'aria-pressed': 'false', 'aria-label': 'Ouvir a explicação de ' + rotuloCurto(t) });
+      b.innerHTML = ICONE_SOM; b.appendChild(novo('span', 'ouvir__txt', 'Ouvir'));
+      b.addEventListener('click', function (e) { e.stopPropagation(); falar(t, b); });
+      return b;
+    }
+
+    /* ---------- Marca os termos no texto ---------- */
+    var NAO_MARCAR = 'a, button, h1, h2, summary, label, script, style, svg, input, textarea, select, figcaption, .termo-tecnico, .glossario-pop, ' +
+                     '.aviso-prototipo, .barra-topo, .cabecalho, .menu-celular, .sobretitulo, .acessos, .ciclo__topo, .fluxo__quem, .carrossel, ' +
+                     '.regioes, .regiao-painel, .mapa-modal, .busca-bairro, .rodape, #dicionario';
+    var mapa = {}, lista = [];
+    GLOSS.forEach(function (t) { (t.variantes || [t.nome]).forEach(function (v) { mapa[v.toLowerCase()] = t.id; lista.push(v); }); });
+    lista.sort(function (a, b) { return b.length - a.length; });   // as formas mais longas primeiro
+    var re = new RegExp('(?<![\\p{L}\\p{N}])(' + lista.map(function (v) { return v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')(?![\\p{L}\\p{N}])', 'giu');
+    function escopoDe(n) { var e = n.nodeType === 1 ? n : n.parentElement; return (e && e.closest('section, details, footer')) || document.body; }
+    function marcarTermos(raiz) {
+      var w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT, { acceptNode: function (n) {
+        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        return (!n.parentElement || n.parentElement.closest(NAO_MARCAR)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+      var nos = []; while (w.nextNode()) nos.push(w.currentNode);
+      nos.forEach(function (n) {
+        var txt = n.nodeValue, esc = escopoDe(n), ped = [], m; re.lastIndex = 0;
+        while ((m = re.exec(txt))) {
+          var id = mapa[m[0].toLowerCase()];
+          if (!id || esc.querySelector('.termo-tecnico[data-termo="' + id + '"]') || ped.some(function (p) { return p.id === id; })) continue;
+          ped.push({ id: id, ini: m.index, fim: m.index + m[0].length });
+        }
+        if (!ped.length) return;
+        var frag = document.createDocumentFragment(), ult = 0;
+        ped.forEach(function (p) {
+          if (p.ini > ult) frag.appendChild(document.createTextNode(txt.slice(ult, p.ini)));
+          var btn = novo('button', 'termo-tecnico', txt.slice(p.ini, p.fim),
+            { type: 'button', 'data-termo': p.id, 'aria-expanded': 'false', 'aria-haspopup': 'dialog' });
+          ult = p.fim;
+          var pont = /^[.,;:!?)]+/.exec(txt.slice(ult));   // a pontuação fica grudada na palavra (não pula de linha sozinha)
+          if (pont) { var junto = novo('span', 'termo-junto'); junto.appendChild(btn); junto.appendChild(document.createTextNode(pont[0])); frag.appendChild(junto); ult += pont[0].length; }
+          else frag.appendChild(btn);
+        });
+        if (ult < txt.length) frag.appendChild(document.createTextNode(txt.slice(ult)));
+        n.parentNode.replaceChild(frag, n);
+      });
+    }
+
+    /* ---------- O balão (no celular, uma folha que sobe de baixo) ---------- */
+    var pop = novo('div', 'glossario-pop', null, { role: 'dialog', 'aria-modal': 'false', hidden: '' });
+    var fundo = novo('div', 'glossario-fundo', null, { hidden: '' });
+    document.body.appendChild(fundo); document.body.appendChild(pop);
+    var atual = null, fixo = false, tFechar = null, tAbrir = null;
+    var temMouse = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    function posicionar() {
+      if (!atual || pop.hidden) return;
+      if (ehCelular()) { pop.style.left = ''; pop.style.top = ''; return; }
+      var z = zoomBody(), r = atual.getBoundingClientRect(), mg = 12, vw = window.innerWidth, vh = window.innerHeight;
+      var pw = pop.offsetWidth * z, ph = pop.offsetHeight * z;
+      var left = Math.min(Math.max(mg, r.left + r.width / 2 - pw / 2), vw - pw - mg), top = r.bottom + 10, acima = false;
+      if (top + ph > vh - mg && r.top - ph - 10 > mg) { top = r.top - ph - 10; acima = true; }
+      pop.style.left = (left / z) + 'px'; pop.style.top = (top / z) + 'px';
+      pop.classList.toggle('glossario-pop--acima', acima);
+      pop.style.setProperty('--seta-x', (Math.min(Math.max(18 * z, r.left + r.width / 2 - left), pw - 18 * z) / z) + 'px');
+    }
+    function abrir(el, fixar, focar) {
+      var t = POR_ID[el.getAttribute('data-termo')]; if (!t) return;
+      clearTimeout(tFechar);
+      if (atual && atual !== el) atual.setAttribute('aria-expanded', 'false');
+      pararFala(); atual = el; fixo = !!fixar;
+      pop.innerHTML = ''; pop.setAttribute('aria-label', 'Explicação: ' + rotuloCurto(t));
+      var fechar = novo('button', 'glossario-pop__fechar', '×', { type: 'button', 'aria-label': 'Fechar explicação' });
+      fechar.addEventListener('click', function () { fecharPop(true); });
+      var acoes = novo('div', 'glossario-pop__acoes');
+      var ouvir = botaoOuvir(t); if (ouvir) acoes.appendChild(ouvir);
+      var verDic = novo('button', 'glossario-pop__link', 'Ver no dicionário', { type: 'button' });
+      verDic.addEventListener('click', function () { fecharPop(false); mostrarNoDicionario(t.id); });
+      acoes.appendChild(verDic);
+      pop.appendChild(fechar);
+      pop.appendChild(novo('div', 'glossario-pop__nome', t.nome));
+      pop.appendChild(novo('p', 'glossario-pop__def', t.def));
+      pop.appendChild(acoes);
+      pop.classList.toggle('glossario-pop--folha', ehCelular());
+      pop.hidden = false; fundo.hidden = !ehCelular();
+      el.setAttribute('aria-expanded', 'true'); posicionar();
+      if (focar) fechar.focus({ preventScroll: true });
+    }
+    function fecharPop(devolver) {
+      clearTimeout(tFechar); clearTimeout(tAbrir);
+      if (pop.hidden) return;
+      pararFala(); pop.hidden = true; fundo.hidden = true;
+      if (atual) { atual.setAttribute('aria-expanded', 'false'); if (devolver) atual.focus({ preventScroll: true }); }
+      atual = null; fixo = false;
+    }
+    document.addEventListener('click', function (e) {
+      var termo = e.target.closest && e.target.closest('.termo-tecnico');
+      if (termo) {
+        e.preventDefault(); e.stopPropagation();
+        var teclado = e.detail === 0;
+        if (atual === termo && fixo) fecharPop(teclado); else abrir(termo, true, teclado);
+        return;
+      }
+      if (!pop.hidden && !pop.contains(e.target)) fecharPop(false);
+    }, true);
+    if (temMouse) {
+      document.addEventListener('mouseover', function (e) {
+        var termo = e.target.closest && e.target.closest('.termo-tecnico');
+        if (termo) { clearTimeout(tFechar); if (atual !== termo) { clearTimeout(tAbrir); tAbrir = setTimeout(function () { abrir(termo, false, false); }, 120); } }
+        else if (pop.contains(e.target)) clearTimeout(tFechar);
+      });
+      document.addEventListener('mouseout', function (e) {
+        var de = e.target.closest && (e.target.closest('.termo-tecnico') || (pop.contains(e.target) ? pop : null)); if (!de) return;
+        var para = e.relatedTarget;
+        if (para && (pop.contains(para) || (atual && atual.contains(para)))) return;
+        clearTimeout(tAbrir); if (!fixo) tFechar = setTimeout(function () { fecharPop(false); }, 250);
+      });
+    }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { e.preventDefault(); fecharPop(true); } });
+    window.addEventListener('scroll', function () { if (!pop.hidden) posicionar(); }, { passive: true });
+    window.addEventListener('resize', function () { if (!pop.hidden) posicionar(); });
+
+    /* ---------- Dicionário: lista em ordem alfabética, busca e letras ---------- */
+    var lista = document.getElementById('dic-lista'), busca = document.getElementById('busca-termo'), letrasBox = document.getElementById('dic-letras');
+    var semAc = function (x) { return x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+    var TERMOS = GLOSS.slice().sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt'); });
+    var INICIAIS = 8, todos = false, aberto = null, letra = '';
+    function inicial(t) { return semAc(t.nome).charAt(0).toUpperCase(); }
+    function desenhar() {
+      if (!lista) return;
+      var q = busca ? semAc(busca.value.trim()) : '', achados = TERMOS.filter(function (t) {
+        if (letra && inicial(t) !== letra) return false;
+        return !q || semAc(t.nome + ' ' + (t.variantes || []).join(' ') + ' ' + t.def).indexOf(q) > -1;
+      });
+      var limite = (q || letra || todos) ? achados.length : INICIAIS;
+      lista.innerHTML = '';
+      achados.slice(0, limite).forEach(function (t) {
+        var ab = aberto === t.id, idp = 'dic-' + t.id;
+        var li = novo('li', 'dic__item' + (ab ? ' dic__item--aberto' : ''));
+        var cab = novo('button', 'dic__termo', null, { type: 'button', 'aria-expanded': ab ? 'true' : 'false', 'aria-controls': idp });
+        var nomes = t.nome.split(' · ');
+        cab.appendChild(novo('span', 'dic__nome', nomes[0]));
+        if (nomes[1]) cab.appendChild(novo('span', 'dic__extenso', nomes[1]));
+        cab.appendChild(novo('span', 'dic__seta', ab ? '−' : '+', { 'aria-hidden': 'true' }));
+        cab.addEventListener('click', function () { aberto = ab ? null : t.id; pararFala(); desenhar(); var bt = lista.querySelector('[aria-controls="' + idp + '"]'); if (bt) bt.focus({ preventScroll: true }); });
+        var painel = novo('div', 'dic__def', null, { id: idp }); painel.hidden = !ab;
+        painel.appendChild(novo('p', null, t.def));
+        var ouvir = botaoOuvir(t); if (ouvir) painel.appendChild(ouvir);
+        li.appendChild(cab); li.appendChild(painel); lista.appendChild(li);
+      });
+      document.getElementById('dic-vazio').hidden = achados.length > 0;
+      var mais = document.getElementById('dic-mais');
+      mais.hidden = achados.length <= limite;
+      mais.textContent = 'Ver todas as ' + achados.length + ' palavras';
+      document.getElementById('dic-contagem').textContent = (q || letra) ? (achados.length + (achados.length === 1 ? ' palavra encontrada' : ' palavras encontradas')) : '';
+    }
+    if (lista) {
+      /* letras: só as que têm palavra */
+      var usadas = []; TERMOS.forEach(function (t) { var l = inicial(t); if (usadas.indexOf(l) < 0) usadas.push(l); });
+      ['Todas'].concat(usadas).forEach(function (l) {
+        var b = novo('button', 'dic__letra', l, { type: 'button', 'aria-pressed': l === 'Todas' ? 'true' : 'false', 'aria-label': l === 'Todas' ? 'Todas as letras' : 'Palavras com a letra ' + l });
+        b.addEventListener('click', function () {
+          letra = l === 'Todas' ? '' : l; aberto = null; if (busca) busca.value = '';
+          [].forEach.call(letrasBox.children, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          desenhar();
+        });
+        letrasBox.appendChild(b);
+      });
+      if (busca) busca.addEventListener('input', function () {
+        aberto = null; letra = ''; [].forEach.call(letrasBox.children, function (x, i) { x.setAttribute('aria-pressed', i === 0 ? 'true' : 'false'); }); desenhar();
+      });
+      document.getElementById('dic-mais').addEventListener('click', function () { todos = true; desenhar(); });
+      desenhar();
+    }
+    function mostrarNoDicionario(id) {
+      if (!lista || !POR_ID[id]) return;
+      if (busca) busca.value = ''; letra = ''; todos = true; aberto = id;
+      [].forEach.call(letrasBox.children, function (x, i) { x.setAttribute('aria-pressed', i === 0 ? 'true' : 'false'); });
+      desenhar();
+      var bt = lista.querySelector('[aria-controls="dic-' + id + '"]');
+      if (bt) { bt.parentElement.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }); bt.focus({ preventScroll: true }); }
+    }
+
+    var principal = document.querySelector('main') || document.body;
+    marcarTermos(principal);
+    /* textos que mudam com os cliques (situação da consulta, resultado) também ganham os balões */
+    var agendado = false;
+    new MutationObserver(function () { if (agendado) return; agendado = true; requestAnimationFrame(function () { agendado = false; marcarTermos(principal); }); })
+      .observe(principal, { childList: true, subtree: true, characterData: true });
+  })();
 })();
