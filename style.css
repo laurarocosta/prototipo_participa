@@ -387,3 +387,20 @@ html.sem-rolagem { overflow: hidden; }
 html.alto-contraste .regiao-mapa, html.alto-contraste .mapa-modal__caixa { background: #000 !important; border-color: #FFE600 !important; }
 html.alto-contraste .regiao-mapa__zoom { background: #FFE600; color: #000; }
 html.alto-contraste .mapa-modal__topo h3 { color: #FFF !important; }
+
+/* Lupa: texto maior. O zoom aumenta letras e espaços juntos, então nada se sobrepõe. */
+html.letra-1 body { zoom: 1.15; }
+html.letra-2 body { zoom: 1.3; }
+.lupa .lupa__menos { display: none; }
+.lupa--max .lupa__mais { display: none; }
+.lupa--max .lupa__menos { display: inline; }
+.barra-topo__links { gap: 14px; }
+@media (max-width: 720px) { .barra-topo { font-size: 12px; } .barra-topo__links { gap: 4px; } .contraste { padding: 6px 7px; } }
+/* bolinhas do carrossel encolhem quando falta espaço (celular ou letra maior) */
+.carrossel__pontos { flex: 1; min-width: 0; max-width: calc(100% - 48px); justify-content: center; }
+.carrossel__ponto { flex: 1 1 0; min-width: 0; max-width: 28px; }
+@media (max-width: 720px) {
+  .carrossel__pontos { justify-content: flex-start; }
+  .lupa__texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .barra-topo__inner { flex-wrap: wrap; row-gap: 0; }
+}

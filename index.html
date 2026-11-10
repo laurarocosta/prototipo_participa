@@ -12,7 +12,8 @@
   <link rel="preload" href="logo-participa.svg" as="image">
   <link rel="preload" as="image" href="fotos/capa-participacao.jpg?v=3" imagesrcset="fotos/capa-participacao-900.jpg?v=3 900w, fotos/capa-participacao.jpg?v=3 1600w" imagesizes="100vw">
   <link rel="preload" href="montserrat.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
+  <script>try{var l=localStorage.getItem("participa-letra");if(l==="1"||l==="2")document.documentElement.classList.add("letra-"+l)}catch(e){}</script>
 </head>
 <body>
   <!--
@@ -30,6 +31,10 @@
       <div class="barra-topo__links">
         <a href="#" class="so-largo">Acesso à informação</a>
         <a href="#" class="so-largo">Ouvidoria</a>
+        <button type="button" class="contraste lupa" id="lupa" aria-pressed="false" aria-label="Aumentar o tamanho do texto">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/><path class="lupa__mais" d="M10.5 7.8v5.4M7.8 10.5h5.4"/><path class="lupa__menos" d="M7.8 10.5h5.4"/></svg>
+          <span class="lupa__texto">Aumentar letra</span>
+        </button>
         <button type="button" class="contraste" id="contraste" aria-pressed="false">
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
           Contraste
@@ -268,6 +273,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=11"></script>
+  <script src="script.js?v=12"></script>
 </body>
 </html>

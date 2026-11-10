@@ -215,6 +215,23 @@
     abrirRA(ras[0], q);
   });
 
+  /* ---------- Lupa: aumenta a letra em 2 níveis e volta ao normal (fica lembrado neste aparelho) ---------- */
+  var botaoLupa = $('lupa'), ROTULO = ['Aumentar letra', 'Aumentar mais', 'Letra normal'],
+      FALA = ['Aumentar o tamanho do texto', 'Aumentar mais o tamanho do texto', 'Voltar o texto ao tamanho normal'];
+  function aplicarLetra(n) {
+    var h = document.documentElement; h.classList.remove('letra-1', 'letra-2'); if (n) h.classList.add('letra-' + n);
+    botaoLupa.querySelector('.lupa__texto').textContent = ROTULO[n];
+    botaoLupa.setAttribute('aria-label', FALA[n]); botaoLupa.setAttribute('aria-pressed', n ? 'true' : 'false');
+    botaoLupa.classList.toggle('lupa--max', n === 2);
+  }
+  var nivelLetra = 0;
+  try { nivelLetra = parseInt(localStorage.getItem('participa-letra'), 10) || 0; } catch (e) {}
+  aplicarLetra(nivelLetra);
+  botaoLupa.addEventListener('click', function () {
+    nivelLetra = (nivelLetra + 1) % 3; aplicarLetra(nivelLetra);
+    try { localStorage.setItem('participa-letra', String(nivelLetra)); } catch (e) {}
+  });
+
   /* ---------- Alto contraste (fica lembrado neste aparelho) ---------- */
   var botaoContraste = $('contraste');
   function aplicarContraste(sim) { document.documentElement.classList.toggle('alto-contraste', sim); botaoContraste.setAttribute('aria-pressed', sim ? 'true' : 'false'); }
